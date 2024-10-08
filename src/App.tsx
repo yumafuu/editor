@@ -1,50 +1,131 @@
-import React, { useState, useRef } from 'react'
+import type React from "react";
+import { useRef, useState } from "react";
 import "./App.css";
+
+type Ticket = {
+  id: number;
+  name: string;
+};
+
+type TicketType = "task" | "memo" | "plan";
 
 function App() {
   const [pressedKey, setPressedKey] = useState<string>("");
-  const [list, setList] = useState<string[]>([]);
+  const [ticketList, setTicketList] = useState<Ticket[]>([]);
+  const [typingType, setTypingType] = useState<TicketType>("memo");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const keyDownHandler = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const icon = () => {
+    switch (typingType) {
+      case "task": {
+        return <input type="checkbox" className="w-4 h-4 rounded-lg"/>
+      }
+      case "memo": {
+        return <span className="text-sm">・</span>;
+      }
+      case "plan": {
+        return <span className="text-sm">📅</span>;
+      }
+    }
+  }
+
+  const keyUpHandler = (event: React.KeyboardEvent<HTMLDivElement>) => {
     const { key } = event;
-    console.log({ key });
 
     setPressedKey(key);
 
-    if (key === "Enter") {
-      const input = inputRef.current;
+    const input = inputRef.current;
+    switch (key) {
+      case "Enter": {
+        const value = input?.value;
+        if (!value) return;
 
-      if (!input) return;
-      const { value } = input;
-      if (!value) return;
+        input.value = "";
+        const newTicket = {
+          id: ticketList.length + 1,
+          name: value,
+        };
+        setTicketList([...ticketList, newTicket]);
+        setTypingType("memo");
+        break;
+      }
+      case " ": { // Space
+        const value = input?.value;
+        if (!value) return;
+        console.log({ value });
 
-      input.value = "";
-      setList([...list, value]);
+        switch (value) {
+          case "- ": {
+            setTypingType("task");
+            input.value = "";
+            break;
+          }
+          case "d ": {
+            setTypingType("plan");
+            input.value = "";
+            break;
+          }
+        }
+        break;
+      }
+    }
+  };
+
+  const KeyDownHandler = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const { key } = event;
+
+    const input = inputRef.current;
+    switch (key) {
+      case "Backspace": {
+        const value = input?.value;
+        if (value === "") {
+          setTypingType("memo");
+        }
+        break;
+      }
     }
   }
 
   return (
     <>
-      <h1>Editor</h1>
-      <div>
-        <input
-          type="text"
-          autoFocus={true}
-          placeholder=""
-          ref={inputRef}
-          onKeyDown={keyDownHandler}
-        />
-        <p>Pressed key: {pressedKey}</p>
-      </div>
-      <div style={{ textAlign: "left" }}>
-        <p>メモ一覧</p>
-        <ul>
-        { list.map((item, index) => (
-            <li key={index}> { item }</li>
-          ))
-        }
-        </ul>
+      <header className="mt-5 flex justify-center">
+        <h1 className="text-3xl">Editor</h1>
+      </header>
+
+      <div className="mx-5">
+        {/* 入力 */}
+
+        <div className="flex mt-5 items-center">
+          <div className="mr-2 w-4 my-auto">
+            { icon() }
+          </div>
+          <input
+            type="text"
+            autoFocus={true}
+            className="border border-slate-300 p-1 w-full"
+            placeholder=""
+            ref={inputRef}
+            onKeyUp={keyUpHandler}
+            onKeyDown={KeyDownHandler}
+          />
+        </div>
+
+        {/* デバッグ */}
+        <p className="mt-2">Pressed key: {pressedKey}</p>
+
+        <div className="mt-5">
+          <p className="text-xl font-thin">チケット一覧</p>
+          <div className="mt-2">
+            <ul>
+              {ticketList.map((ticket) =>
+                  <li
+                    key={ticket.id}
+                    className="border-b border-gray-300 p-2"
+                  >{ticket.name}</li>
+                )}
+            </ul>
+          </div>
+        </div>
       </div>
     </>
   );
