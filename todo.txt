@@ -1,4 +1,4 @@
-- typeごとにitemを表示する
+- Componentで分割
 - type特有の動きを実装
 
 ---

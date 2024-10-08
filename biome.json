@@ -9,6 +9,7 @@
     "ignoreUnknown": false,
     "ignore": [
       "main.tsx",
+      "dist",
       "node_modules",
       "tailwind.config.js",
       "vite.config.ts",
