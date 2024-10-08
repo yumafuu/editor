@@ -4,6 +4,7 @@ import "./App.css";
 
 type Ticket = {
   id: number;
+  type: TicketType;
   name: string;
 };
 
@@ -15,19 +16,19 @@ function App() {
   const [typingType, setTypingType] = useState<TicketType>("memo");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const icon = () => {
-    switch (typingType) {
+  const icon = (type: TicketType) => {
+    switch (type) {
       case "task": {
-        return <input type="checkbox" className="w-4 h-4 rounded-lg"/>
+        return <input type="checkbox" className="w-4 h-4 rounded-lg" />;
       }
       case "memo": {
-        return <span className="text-sm">・</span>;
+        return <span className="text-sm">-</span>;
       }
       case "plan": {
         return <span className="text-sm">📅</span>;
       }
     }
-  }
+  };
 
   const keyUpHandler = (event: React.KeyboardEvent<HTMLDivElement>) => {
     const { key } = event;
@@ -43,13 +44,15 @@ function App() {
         input.value = "";
         const newTicket = {
           id: ticketList.length + 1,
+          type: typingType,
           name: value,
         };
         setTicketList([...ticketList, newTicket]);
         setTypingType("memo");
         break;
       }
-      case " ": { // Space
+      case " ": {
+        // Space
         const value = input?.value;
         if (!value) return;
         console.log({ value });
@@ -84,7 +87,7 @@ function App() {
         break;
       }
     }
-  }
+  };
 
   return (
     <>
@@ -96,9 +99,7 @@ function App() {
         {/* 入力 */}
 
         <div className="flex mt-5 items-center">
-          <div className="mr-2 w-4 my-auto">
-            { icon() }
-          </div>
+          <div className="mr-2 w-4 my-auto">{icon(typingType)}</div>
           <input
             type="text"
             autoFocus={true}
@@ -117,12 +118,15 @@ function App() {
           <p className="text-xl font-thin">チケット一覧</p>
           <div className="mt-2">
             <ul>
-              {ticketList.map((ticket) =>
-                  <li
-                    key={ticket.id}
-                    className="border-b border-gray-300 p-2"
-                  >{ticket.name}</li>
-                )}
+              {ticketList.map((ticket) => (
+                <li
+                  key={ticket.id}
+                  className="border-b border-gray-300 p-2 flex items-center"
+                >
+                  <span className="mr-2">{icon(ticket.type)}</span>
+                  <pre> {ticket.name} </pre>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

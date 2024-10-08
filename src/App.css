@@ -1,11 +1,11 @@
 html {
   background-color: #262626;
-  color: #E2E8F0;
+  color: #e2e8f0;
 }
 
 input {
-  background-color: #2D3748;
-  color: #E2E8F0;
+  background-color: #2d3748;
+  color: #e2e8f0;
 }
 
 h1 {
@@ -13,5 +13,5 @@ h1 {
 }
 
 #root {
-	max-width: 1280px;
+  max-width: 1280px;
 }
